@@ -2,6 +2,7 @@ package netbox
 
 import (
 	"fmt"
+
 	netboxclient "github.com/netbox-community/go-netbox/netbox/client"
 	"github.com/netbox-community/go-netbox/netbox/client/virtualization"
 	"github.com/netbox-community/go-netbox/netbox/models"
@@ -171,9 +172,9 @@ func convertCustomFieldsFromTerraformToAPICreate(customFields map[string]interfa
 
 		// special handling for booleans, as they are the only parameter not supplied as string to netbox
 		if value == "true" {
-			toReturn[key] = 1
+			toReturn[key] = true
 		} else if value == "false" {
-			toReturn[key] = 0
+			toReturn[key] = false
 		}
 	}
 
@@ -202,9 +203,9 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 
 		// special handling for booleans, as they are the only parameter not supplied as string to netbox
 		if value == "true" {
-			toReturn[key] = 1
+			toReturn[key] = true
 		} else if value == "false" {
-			toReturn[key] = 0
+			toReturn[key] = false
 		}
 	}
 
