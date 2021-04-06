@@ -41,11 +41,9 @@ func dataNetboxIpamIPAddressesRead(d *schema.ResourceData,
 	}
 
 	if *list.Payload.Count < 1 {
-		return fmt.Errorf("Your query returned no results. " +
-			"Please change your search criteria and try again.")
+		return fmt.Errorf("query returned no results, please change your search criteria and try again")
 	} else if *list.Payload.Count > 1 {
-		return fmt.Errorf("Your query returned more than one result. " +
-			"Please try a more specific search criteria.")
+		return fmt.Errorf("query returned more than one result, please try a more specific search criteria")
 	}
 
 	d.SetId(strconv.FormatInt(list.Payload.Results[0].ID, 10))

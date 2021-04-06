@@ -168,13 +168,24 @@ func convertCustomFieldsFromAPIToTerraform(customFields interface{}) map[string]
 func convertCustomFieldsFromTerraformToAPICreate(customFields map[string]interface{}) map[string]interface{} {
 	toReturn := make(map[string]interface{})
 	for key, value := range customFields {
-		toReturn[key] = value
+		//
+		// note!
+		// 1. https://github.com/smutel/terraform-provider-netbox/issues/32
+		//    under certain circumstances terraform puts empty string into `resourceCustomFields` when parent block is removed
+		//    we simply replace these occurences with `nil` to not negatively affect the boolean field where empty string is equal to false
+		//
+		// 2. special handling for booleans, as they are the only parameter not supplied as string to netbox
+		//
 
-		// special handling for booleans, as they are the only parameter not supplied as string to netbox
-		if value == "true" {
+		switch value {
+		case "":
+			toReturn[key] = nil
+		case "true":
 			toReturn[key] = true
-		} else if value == "false" {
+		case "false":
 			toReturn[key] = false
+		default:
+			toReturn[key] = value
 		}
 	}
 
@@ -193,19 +204,24 @@ func convertCustomFieldsFromTerraformToAPIUpdate(stateCustomFields, resourceCust
 
 	// then we override the values that still exist in the terraform code with their respective value
 	for key, value := range resourceCustomFields.(map[string]interface{}) {
-		toReturn[key] = value
-		// https://github.com/smutel/terraform-provider-netbox/issues/32
-		// under certain circumstances terraform puts empty string into `resourceCustomFields` when parent block is removed
-		// we simply replace these occurences with `nil` to not negatively affect the boolean field where empty string is equal to false
-		if value == "" {
-			toReturn[key] = nil
-		}
+		//
+		// note!
+		// 1. https://github.com/smutel/terraform-provider-netbox/issues/32
+		//    under certain circumstances terraform puts empty string into `resourceCustomFields` when parent block is removed
+		//    we simply replace these occurences with `nil` to not negatively affect the boolean field where empty string is equal to false
+		//
+		// 2. special handling for booleans, as they are the only parameter not supplied as string to netbox
+		//
 
-		// special handling for booleans, as they are the only parameter not supplied as string to netbox
-		if value == "true" {
+		switch value {
+		case "":
+			toReturn[key] = nil
+		case "true":
 			toReturn[key] = true
-		} else if value == "false" {
+		case "false":
 			toReturn[key] = false
+		default:
+			toReturn[key] = value
 		}
 	}
 

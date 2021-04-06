@@ -26,8 +26,8 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"address": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
 				ValidateFunc: validation.IsCIDR,
 			},
 			"custom_fields": {
@@ -42,22 +42,30 @@ func resourceNetboxIpamIPAddresses() *schema.Resource {
 					// function is called for each member of map
 					// including additional call on the amount of entries
 					// we ignore the count, because the actual state always returns the amount of existing custom_fields and all are optional in terraform
-					if k == CustomFieldsRegex {
+					// if k == CustomFieldsRegex {
+					// 	log.Printf("[DEBUG] resource key %v is the count of map items, suppressing diff", k)
+					// 	return true
+					// }
+					if d.Get(k) == "" && k != CustomFieldsRegex {
+						log.Printf("[DEBUG] resource key %v is an empty string, suppressing diff", k)
 						return true
 					}
-					return old == new
+
+					//return old == new
+
+					return false
 				},
 			},
 			"description": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      " ",
+				Default:      "",
 				ValidateFunc: validation.StringLenBetween(1, 100),
 			},
 			"dns_name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  " ",
+				Default:  "",
 				ValidateFunc: validation.StringMatch(
 					regexp.MustCompile("^[-a-zA-Z0-9_.]{1,255}$"),
 					"Must be like ^[-a-zA-Z0-9_.]{1,255}$"),
@@ -235,7 +243,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 			var description string
 			if resource.Description == "" {
-				description = " "
+				description = ""
 			} else {
 				description = resource.Description
 			}
@@ -246,7 +254,7 @@ func resourceNetboxIpamIPAddressesRead(d *schema.ResourceData,
 
 			var dnsName string
 			if resource.DNSName == "" {
-				dnsName = " "
+				dnsName = ""
 			} else {
 				dnsName = resource.DNSName
 			}
@@ -391,7 +399,7 @@ func resourceNetboxIpamIPAddressesUpdate(d *schema.ResourceData,
 		if description, exist := d.GetOk("description"); exist {
 			params.Description = description.(string)
 		} else {
-			params.Description = " "
+			params.Description = ""
 		}
 	}
 
