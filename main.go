@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/plugin"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"github.com/smutel/terraform-provider-netbox/netbox"
 )
 
@@ -17,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	opts := &plugin.ServeOpts{
-		ProviderFunc: func() terraform.ResourceProvider {
+		ProviderFunc: func() *schema.Provider {
 			return netbox.Provider()
 		},
 	}
